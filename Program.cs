@@ -12,7 +12,7 @@ namespace ImageResizer;
 
 public static class Program
 {
-	public static readonly Version Version = new(1, 0, 1);
+	public static readonly Version Version = new(1, 0, 2);
 	public static void Main(string[] args)
 	{
 		Parser.Default.ParseArguments<Options>(args)
@@ -34,8 +34,17 @@ public static class Program
 				Directory outDir = new(a.OutputDirectory);
 				Directory fileDir = new Directory(Environment.CurrentDirectory);
 
-				IEnumerable<File> files = System.IO.Directory.GetFiles(fileDir.Path, a.ImageFilter, System.IO.SearchOption.AllDirectories).Select(s => new File(s));
+				if (!fileDir.Exists)
+				{
+					WriteLine("Directory {0} doesnt exists", fileDir.Path);
+				}
 
+				IEnumerable<File> files = System.IO.Directory.GetFiles(fileDir.Path, a.ImageFilter, System.IO.SearchOption.AllDirectories).Select(s => new File(s));
+				if (files.Count() == 0)
+				{
+					WriteLine("Images doesnt found");
+					return;
+				}
 				foreach (File file in files)
 				{
 					Directory topDir = null;
@@ -50,7 +59,8 @@ public static class Program
 						dirs.Add(topDir.Name);
 					}
 					dirs.Reverse();
-					string relPath = Strings.FromArray(dirs, "", "", Directory.DirectorySeparator.ToString());
+					int filterDirDefined = a.ImageFilter.Split(new char[] { Path.DirectorySeparator, Path.AltDirectorySeparator }).Where(s => !s.Contains('*')).Count();
+					string relPath = Strings.FromArray(dirs.Skip(filterDirDefined), "", "", Path.DirectorySeparator.ToString());
 					Directory outputPath = a.CopyAsNested ? new(outDir, relPath) : outDir;
 					outputPath.Create();
 
@@ -105,10 +115,13 @@ public static class Program
 						resizedImage.Save(new File(outputPath.Path, file.Name).Path, originalImage.RawFormat);
 						WriteGreen($"Image {file.Name} succsessfully resized ({originalImage.Width}, {originalImage.Height}) -> ({width}, {height})");
 					}
-					catch
+					catch (Exception ex)
 					{
 						WriteError($"Failed resize on image {file.Name}");
-						return;
+						if (!a.Unstoppable)
+						{
+							throw ex;
+						}
 					}
 				}
 			});
@@ -147,4 +160,7 @@ public class Options
 
 	[Option('m', "mode", Required = false, HelpText = "Set interpolation mode")]
 	public InterpolationMode InterpolationMode { get; set; } = InterpolationMode.NearestNeighbor;
+
+	[Option('u', "unstoppable", Required = false, HelpText = "Doesnt throw any exceptions, any continue run code")]
+	public bool Unstoppable { get; set; } = false;
 }

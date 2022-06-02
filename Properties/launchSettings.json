@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ImageResizer": {
+      "commandName": "Project",
+      "commandLineArgs": "-f \"images/*.png\" -u"
+    }
+  }
+}
