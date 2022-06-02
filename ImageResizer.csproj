@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
 	  <LangVersion>latest</LangVersion>
+	  <AssemblyVersion>1.0.2</AssemblyVersion>
 	  <AssemblyName>ImageResizer</AssemblyName>
 	  <Authors>NiTiS-Dev</Authors>
   </PropertyGroup>
