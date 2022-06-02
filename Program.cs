@@ -1,10 +1,12 @@
 ﻿using CommandLine;
 using NiTiS.Additions;
 using NiTiS.IO;
+using NiTiS.Reflection;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
 using static System.Console;
 
@@ -12,7 +14,7 @@ namespace ImageResizer;
 
 public static class Program
 {
-	public static readonly Version Version = new(1, 0, 2);
+	public static readonly Version Version = new(1, 0, 3);
 	public static void Main(string[] args)
 	{
 		Parser.Default.ParseArguments<Options>(args)
@@ -30,6 +32,17 @@ public static class Program
 				WriteLine(a.CopyAsNested);
 #endif
 				if (a.ImageFilter is null) return;
+
+				IResampler resampler = Class.OfType(typeof(KnownResamplers)).StaticFields.Where(s => s.Name == $"<{a.ResamplerMode}>k__BackingField").Select(s => (IResampler)s.GetValue(null)).FirstOrDefault();
+
+				if (resampler is null)
+				{
+					WriteError("Resampler doesnt found!");
+					if (!a.Unstoppable)
+					{
+						throw new Exception("Resampler doesnt found");
+					}
+				}
 
 				Directory outDir = new(a.OutputDirectory);
 				Directory fileDir = new Directory(Environment.CurrentDirectory);
@@ -107,12 +120,12 @@ public static class Program
 					//Resize
 					try
 					{
-						using Bitmap originalImage = new(file.Path);
+						using Image originalImage = Image.Load(file.Path);
 						int width = (int)(originalImage.Width * x);
 						int height = (int)(originalImage.Height * y);
 						WriteLine("New size are: {0}, {1}", width, height);
-						using Bitmap resizedImage = ImageFunctions.ResizeImage(originalImage, width, height, InterpolationMode.NearestNeighbor);
-						resizedImage.Save(new File(outputPath.Path, file.Name).Path, originalImage.RawFormat);
+						originalImage.Mutate((image) => image.Resize(width, height, resampler));
+						originalImage.Save(new File(outputPath.Path, file.Name).Path);
 						WriteGreen($"Image {file.Name} succsessfully resized ({originalImage.Width}, {originalImage.Height}) -> ({width}, {height})");
 					}
 					catch (Exception ex)
@@ -159,7 +172,7 @@ public class Options
 	public string Resize { get; set; } = "2x2";
 
 	[Option('m', "mode", Required = false, HelpText = "Set interpolation mode")]
-	public InterpolationMode InterpolationMode { get; set; } = InterpolationMode.NearestNeighbor;
+	public string ResamplerMode { get; set; } = "Bicubic";
 
 	[Option('u', "unstoppable", Required = false, HelpText = "Doesnt throw any exceptions, any continue run code")]
 	public bool Unstoppable { get; set; } = false;
