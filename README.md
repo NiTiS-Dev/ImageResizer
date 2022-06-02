@@ -17,7 +17,7 @@ ImageResizer [options]
 # Examples
 ## Compress images in half
 ```cmd
-ImageResizer -f "normalCats/*.png" -o "microCats/" -size 0,5x0,5
+ImageResizer -f "normalCats/*.png" -o "microCats/" --size 0,5x0,5
 ```
 # Parameters
 ## Unstoppable *Flag* `-u` `--unstoppable` def:false
