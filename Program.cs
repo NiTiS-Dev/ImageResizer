@@ -12,7 +12,7 @@ namespace ImageResizer;
 
 public static class Program
 {
-	public static readonly Version Version = new(1, 0, 1);
+	public static readonly Version Version = new(1, 0, 2);
 	public static void Main(string[] args)
 	{
 		Parser.Default.ParseArguments<Options>(args)
@@ -108,7 +108,7 @@ public static class Program
 					catch
 					{
 						WriteError($"Failed resize on image {file.Name}");
-						return;
+						continue;
 					}
 				}
 			});
