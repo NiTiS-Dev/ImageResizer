@@ -103,7 +103,7 @@ public static class Program
 						WriteLine("New size are: {0}, {1}", width, height);
 						using Bitmap resizedImage = ImageFunctions.ResizeImage(originalImage, width, height, InterpolationMode.NearestNeighbor);
 						resizedImage.Save(new File(outputPath.Path, file.Name).Path, originalImage.RawFormat);
-						WriteGreen($"Image {file.Name} succsessfully resized");
+						WriteGreen($"Image {file.Name} succsessfully resized ({originalImage.Width}, {originalImage.Height}) -> ({width}, {height})");
 					}
 					catch
 					{
