@@ -14,7 +14,7 @@ on:
     branches: [ single ]
 
 jobs:
-  example_matrix:
+  project_build:
     strategy:
       matrix:
         publish-profile: ["WindowsBuild", "LinuxBuild"]
@@ -28,6 +28,11 @@ jobs:
         with:
           dotnet-version: '6.x'
 
-      - name: Build ${{ matrix.publish-profile }}
+      - name: ${{ matrix.publish-profile }}
         run: |
           dotnet publish -p:PublishProfile=${{ matrix.publish-profile }} -o:"out/${{ matrix.publish-profile }}"
+          
+      - name: Artifact Uploading
+        uses: actions/upload-artifact@v2
+        with:
+          path: .out/${{matrix.publish-profile}}/
