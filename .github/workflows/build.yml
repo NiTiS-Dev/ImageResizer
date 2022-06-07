@@ -32,6 +32,10 @@ jobs:
         run: |
           dotnet publish -p:PublishProfile=${{ matrix.publish-profile }} -o:".out/${{ matrix.publish-profile }}"
           
+          cd .out/
+          cd ${{ matrix.publish-profile }}
+          ls
+          
       - name: Artifact Uploading
         uses: actions/upload-artifact@v2
         with:
