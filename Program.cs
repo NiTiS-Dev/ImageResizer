@@ -14,7 +14,7 @@ namespace ImageResizer;
 
 public static class Program
 {
-	public static readonly Version Version = new(1, 0, 3);
+	public static readonly Version Version = new(1, 0, 4);
 	public static void Main(string[] args)
 	{
 		Parser.Default.ParseArguments<Options>(args)
@@ -121,12 +121,14 @@ public static class Program
 					try
 					{
 						using Image originalImage = Image.Load(file.Path);
+						int oldWidth = originalImage.Width;
+						int oldHeight = originalImage.Height;
 						int width = (int)(originalImage.Width * x);
 						int height = (int)(originalImage.Height * y);
 						WriteLine("New size are: {0}, {1}", width, height);
 						originalImage.Mutate((image) => image.Resize(width, height, resampler));
 						originalImage.Save(new File(outputPath.Path, file.Name).Path);
-						WriteGreen($"Image {file.Name} succsessfully resized ({originalImage.Width}, {originalImage.Height}) -> ({width}, {height})");
+						WriteGreen($"Image {file.Name} succsessfully resized ({oldWidth}, {oldHeight}) -> ({width}, {height})");
 					}
 					catch (Exception ex)
 					{

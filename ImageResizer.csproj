@@ -6,7 +6,7 @@
 		<LangVersion>latest</LangVersion>
 		<AssemblyName>ImageResizer</AssemblyName>
 		<Authors>NiTiS-Dev</Authors>
-		<Version>1.0.3</Version>
+		<Version>1.0.4</Version>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 	</PropertyGroup>
