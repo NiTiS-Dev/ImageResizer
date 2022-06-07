@@ -36,6 +36,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          overwrite: true #Required for valid upload pdb file
           file: .out/${{matrix.publish-profile}}/
           tags: true
           draft: true
