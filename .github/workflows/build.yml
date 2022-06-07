@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [ singleton ]
+    branches: [ single ]
     paths:
     - '**.cs'
     - '**.csproj'
@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
   pull_request:
-    branches: [ singleton ]
+    branches: [ single ]
 
 jobs:
   example_matrix:
@@ -30,4 +30,4 @@ jobs:
 
       - name: Build ${{ matrix.publish-profile }}
         run: |
-          dotnet publish -p:PublishProfile=${{ matrix.publish-profile }}
+          dotnet publish -p:PublishProfile=${{ matrix.publish-profile }} -o:"out/${{ matrix.publish-profile }}"
