@@ -1,0 +1,41 @@
+name: Tag Build
+
+on:
+  push:
+    tags:
+      - '*'
+    
+  workflow_dispatch:
+
+jobs:
+  project_build:
+    strategy:
+      matrix:
+        publish-profile: ["WindowsBuild", "LinuxBuild"]
+    
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Install DotNet v6
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.x'
+
+      - name: ${{ matrix.publish-profile }}
+        run: |
+          dotnet publish -p:PublishProfile=${{ matrix.publish-profile }} -o:".out/${{ matrix.publish-profile }}"
+          
+          cd .out/
+          cd ${{ matrix.publish-profile }}
+          ls
+          
+          
+      - name: Upload files to release  
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: .out/${{matrix.publish-profile}}/
+          tags: true
+          draft: true
